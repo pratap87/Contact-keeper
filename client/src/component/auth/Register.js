@@ -1,6 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState,useContext,useEffect } from 'react';
+import AlertContext from '../../context/alert/alertContext';
+import AuthContext from '../../context/Auth/AuthContext';
+const Register = (props) => {
+    const alertContext  =useContext(AlertContext); 
 
-const Register = () => {
+    const authContext =useContext(AuthContext);
+
+    const {register,error,clearErrors,isAuthenticated}=authContext;
+    const {setAlert}=alertContext;
+
+    useEffect(()=>{
+        if(isAuthenticated){
+            props.history.push('/');
+        }
+        if(error==='User already exists'){
+            setAlert(error,'danger')
+            clearErrors();
+        }
+    },[error,isAuthenticated,props.history])
     const [user, setuser] = useState({
         name: '',
         email: '',
@@ -14,7 +31,23 @@ const Register = () => {
 
     const onSubmit=e=>{
         e.preventDefault();
-        console.log('Register')
+        if(name===''||email===''||password===''){
+            setAlert('Please Enter All Fields','danger')
+        }
+        else if(password.length<6){
+            setAlert('Password Must be of 6 length at least','danger')
+        }
+        else if(password!==password2){
+            setAlert('PassWord Do not match','danger')
+        }
+        else{
+            
+            register({
+                name,email,password
+            })
+        
+       
+        }
     }
     return (
         <div className="form-container">
@@ -22,19 +55,19 @@ const Register = () => {
             <form onSubmit={onSubmit}>
                 <div className="form-group">
                     <lable htmlFor="name">Name</lable>
-                    <input type="text" name="name" value={name} onChange={onChange} />
+                    <input type="text" name="name" value={name} onChange={onChange} required />
                 </div>
                 <div className="form-group">
                     <lable htmlFor="email">Email</lable>
-                    <input type="email" name="email" value={email} onChange={onChange} />
+                    <input type="email" name="email" value={email} onChange={onChange} required />
                 </div>
                 <div className="form-group">
                     <lable htmlFor="password">Password</lable>
-                    <input type="password" name="password" value={password} onChange={onChange} />
+                    <input type="password" name="password" value={password} onChange={onChange}  required minLength="6"/>
                 </div>
                 <div className="form-group">
                     <lable htmlFor="password2"> Confirm Password</lable>
-                    <input type="password" name="password2" value={password2} onChange={onChange} />
+                    <input type="password" name="password2" value={password2} onChange={onChange}  required minLength="6" />
                 </div>
                 <input type="submit" value="Register" className="btn btn-primary btn-block" />
             </form>

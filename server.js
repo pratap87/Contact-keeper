@@ -1,10 +1,10 @@
- 
+const cors=require('cors');
 const express = require('express');
 const app = express();
 const connectDB=require('./config/db')
 const bcrypt=require('bcryptjs');
 connectDB();
-
+app.use(cors({credentials: true, origin: true}));
 app.use(express.json({extended:false}))
 app.set('port', process.env.port || 5000) 
 
